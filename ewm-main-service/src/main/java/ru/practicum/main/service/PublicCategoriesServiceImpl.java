@@ -24,7 +24,7 @@ public class PublicCategoriesServiceImpl implements PublicCategoriesService {
     @Override
     public List<Categories> getListCategories(int from, int size) {
         Pageable pageable = PageRequest.of(from > 0 ? from / size : 0, size, Sort.by("id").ascending());
-        List<Categories> list = (List<Categories>) repository.findAll(pageable);
+        List<Categories> list = repository.findAllCategories(pageable);
         log.info("get list categories");
         return list;
     }
