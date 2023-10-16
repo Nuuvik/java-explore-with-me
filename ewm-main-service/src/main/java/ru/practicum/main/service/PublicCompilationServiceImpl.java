@@ -31,7 +31,7 @@ public class PublicCompilationServiceImpl implements PublicCompilationService {
 
     @Override
     public CompilationShort getCompilationById(long compId) {
-        Compilations compilations = repository.findById(compId).orElseThrow(() -> new NotFoundException("Данной подборки не существует"));
+        Compilations compilations = repository.findById(compId).orElseThrow(() -> new NotFoundException("This collection does not exist"));
         log.info("get compilation by id");
         return toCompilationShort(compilations);
     }
@@ -55,6 +55,6 @@ public class PublicCompilationServiceImpl implements PublicCompilationService {
                         EventMapper.toEventShort(event, view.getOrDefault(event.getId(), 0L), confirmedRequest.getOrDefault(event.getId(), 0L)))
                 .collect(Collectors.toList());
 
-        return  CompilationMapper.toCompilationShort(compilations, listEventShort);
+        return CompilationMapper.toCompilationShort(compilations, listEventShort);
     }
 }

@@ -15,7 +15,6 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 @Slf4j
 public class UserServiceImpl implements UserService {
 
@@ -37,10 +36,11 @@ public class UserServiceImpl implements UserService {
             log.info("delete user");
             repository.deleteById(userId);
         } else {
-            throw new NotFoundException("Пользователя с данным id нет");
+            throw new NotFoundException("There is no user with this id");
         }
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<User> getUsers(List<Long> ids, int from, int size) {
         Pageable pageable = PageRequest.of(from > 0 ? from / size : 0, size, Sort.by("id").ascending());

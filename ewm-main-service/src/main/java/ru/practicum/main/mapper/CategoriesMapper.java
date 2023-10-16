@@ -23,7 +23,7 @@ public class CategoriesMapper {
                 .build();
     }
 
-    public List<CategoriesDto> toListCategoriesDto(List<Categories> list) {
+    public List<CategoriesDto> toCategoriesDto(List<Categories> list) {
         return list.stream().map(CategoriesMapper::toCategoriesDto).collect(Collectors.toList());
     }
 }

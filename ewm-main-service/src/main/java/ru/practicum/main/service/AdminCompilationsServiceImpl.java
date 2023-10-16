@@ -53,7 +53,7 @@ public class AdminCompilationsServiceImpl implements AdminCompilationsService {
         Map<Long, Long> confirmedRequest = statService.toConfirmedRequest(events);
 
         List<EventShort> listEventShort = compilations.getEvents().stream().map(event ->
-                EventMapper.toEventShort(event, view.getOrDefault(event.getId(), 0L), confirmedRequest.getOrDefault(event.getId(), 0L)))
+                        EventMapper.toEventShort(event, view.getOrDefault(event.getId(), 0L), confirmedRequest.getOrDefault(event.getId(), 0L)))
                 .collect(Collectors.toList());
 
         log.info("create new compilation");
@@ -64,7 +64,7 @@ public class AdminCompilationsServiceImpl implements AdminCompilationsService {
     public void deleteCompilation(long compId) {
         boolean answer = repository.existsById(compId);
         if (!answer) {
-            throw new NotFoundException("Данной подборки не существует");
+            throw new NotFoundException("There is no given compilation");
         }
         log.info("delete compilation");
         repository.deleteById(compId);
@@ -72,7 +72,7 @@ public class AdminCompilationsServiceImpl implements AdminCompilationsService {
 
     @Override
     public CompilationShort patchCompilation(long compId, NewCompilation newCompilation) {
-        Compilations compilations = repository.findById(compId).orElseThrow(() -> new NotFoundException("Данной подборки не существует"));
+        Compilations compilations = repository.findById(compId).orElseThrow(() -> new NotFoundException("There is no given compilation"));
 
         if (newCompilation.getPinned() != null) {
             compilations.setPinned(newCompilation.getPinned());

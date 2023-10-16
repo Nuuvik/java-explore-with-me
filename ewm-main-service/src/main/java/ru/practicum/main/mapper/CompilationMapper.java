@@ -52,7 +52,7 @@ public class CompilationMapper {
                 .build();
     }
 
-    public List<CompilationsDto> toListCompilationDto(List<CompilationShort> list) {
+    public List<CompilationsDto> toCompilationDto(List<CompilationShort> list) {
         return list.stream().map(CompilationMapper::toCompilationsDto).collect(Collectors.toList());
     }
 
@@ -65,7 +65,7 @@ public class CompilationMapper {
                 .build();
     }
 
-    public List<CompilationsDto> toListCompilationDtoFromCompilation(List<Compilations> list) {
+    public List<CompilationsDto> toCompilationDtoFromCompilation(List<Compilations> list) {
         return list.stream().map(CompilationMapper::toCompilationsDtoFromCompilation).collect(Collectors.toList());
     }
 }

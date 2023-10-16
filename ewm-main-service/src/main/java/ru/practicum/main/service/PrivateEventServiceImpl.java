@@ -52,10 +52,10 @@ public class PrivateEventServiceImpl implements PrivateEventService {
     @Transactional
     @Override
     public Event createEvent(long userId, Event event) {
-        event.setCategory(categoriesMainServiceRepository.findById(event.getCategory().getId()).orElseThrow(() -> new NotFoundException("Категория не найдена")));
+        event.setCategory(categoriesMainServiceRepository.findById(event.getCategory().getId()).orElseThrow(() -> new NotFoundException("Category not found")));
         event.setCreatedOn(LocalDateTime.now().withNano(0));
         event.setLocation(locationMainServiceRepository.save(event.getLocation()));
-        event.setInitiator(userMainServiceRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь не найден")));
+        event.setInitiator(userMainServiceRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found")));
         event.setState(State.PENDING);
         log.info("create new event");
         return repository.save(event);
@@ -66,7 +66,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
         Pageable pageable = PageRequest.of(from > 0 ? from / size : 0, size, Sort.by("id").ascending());
         boolean answer = userMainServiceRepository.existsById(userId);
         if (!answer) {
-            throw new NotFoundException("Пользователь не найден");
+            throw new NotFoundException("User not found");
         }
         List<Event> listEvent = repository.findAllByInitiatorId(userId, pageable); //получил ивенты созданные этим пользователем
         if (listEvent.isEmpty()) {
@@ -87,7 +87,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
 
     @Override
     public Event getEventByUserIdAndEventId(long userId, long eventId) {
-        Event event = repository.findByIdAndInitiatorId(eventId, userId).orElseThrow(() -> new NotFoundException("Ивент не найден"));
+        Event event = repository.findByIdAndInitiatorId(eventId, userId).orElseThrow(() -> new NotFoundException("Event not found"));
 
         Map<Long, Long> confirmedRequest = statService.toConfirmedRequest(List.of(event));
 
@@ -102,20 +102,20 @@ public class PrivateEventServiceImpl implements PrivateEventService {
     @Transactional
     @Override
     public Event patchEvent(long userId, long eventId, UpdateEvent updateEvent) {
-        Event event = repository.findByIdAndInitiatorId(eventId, userId).orElseThrow(() -> new NotFoundException("Ивент не найден"));
+        Event event = repository.findByIdAndInitiatorId(eventId, userId).orElseThrow(() -> new NotFoundException("Event not found"));
 
         if (!event.getInitiator().getId().equals(userId)) {
-            throw new ConflictException("ВЫ не создавали этот евент");
+            throw new ConflictException("You are not creator of this event");
         }
 
         if (event.getState().equals(State.PUBLISHED)) {
-            throw new ConflictException("Нельзя изменить уже опубликованные события");
+            throw new ConflictException("Events that have already been published cannot be changed");
         }
 
         LocalDateTime eventTime = updateEvent.getEventDate();
         if (eventTime != null) {
             if (eventTime.isBefore(LocalDateTime.now().plusHours(2))) {
-                throw new BadRequestException("Дата и время события не могут быть раньше чем за 2 часа до данного момента");
+                throw new BadRequestException("The date and time of the event cannot be earlier than 2 hours before this moment");
             }
             event.setEventDate(eventTime);
         }
@@ -147,7 +147,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
 
         if (updateEvent.getCategory() != null) {
             event.setCategory(categoriesMainServiceRepository.findById(updateEvent.getCategory())
-                    .orElseThrow(() -> new NotFoundException("Категория не найдена")));
+                    .orElseThrow(() -> new NotFoundException("Category not found")));
         }
         if (updateEvent.getLocation() != null) {
             event.setLocation(getLocation(updateEvent.getLocation()).orElse(saveLocation(updateEvent.getLocation())));
@@ -163,12 +163,10 @@ public class PrivateEventServiceImpl implements PrivateEventService {
     }
 
 
-
     @Override
     public List<Request> getRequestByUserIdAndEventId(long userId, long eventId) {
-        boolean answer = repository.existsByIdAndInitiatorId(eventId, userId);
-        if (!answer) {
-            throw new ConflictException("Вы не являетесь инициатором события");
+        if (!repository.existsByIdAndInitiatorId(eventId, userId)) {
+            throw new ConflictException("You are not the initiator of the event");
         }
 
         List<Request> list = requestMainServiceRepository.findAllByEventId(eventId);
@@ -181,25 +179,25 @@ public class PrivateEventServiceImpl implements PrivateEventService {
     public RequestShortUpdate patchRequestByOwnerUser(long userId, long eventId, RequestShort requestShort) {
         boolean answerUser = userMainServiceRepository.existsById(userId);
         if (!answerUser) {
-            throw new NotFoundException("Пользователя с id " + userId + " не существует");
+            throw new NotFoundException("User with id -  " + userId + " not found");
         }
-        Event event = repository.findById(eventId).orElseThrow(() -> new NotFoundException("События с id " + eventId + " не существует"));
+        Event event = repository.findById(eventId).orElseThrow(() -> new NotFoundException("Event with id - " + eventId + " not found"));
 
         if (!event.getInitiator().getId().equals(userId)) {
-            throw new ConflictException("Вы не являетесь инициатором события");
+            throw new ConflictException("You are not the initiator of the event");
         }
 
         int confirmedRequest = statService.toConfirmedRequest(List.of(event)).values().size();
 
         if (event.getParticipantLimit() != 0 && confirmedRequest >= event.getParticipantLimit()) {
-            throw new ConflictException("Нет свободный заявок на участие");
+            throw new ConflictException("There are no free applications for participation");
         }
 
         RequestShortUpdate updateRequest = new RequestShortUpdate();
 
         requestShort.getRequestIds().forEach(requestId -> {
 
-            Request request = requestMainServiceRepository.findById(requestId).orElseThrow(() -> new NotFoundException("Данного запроса не найденно"));
+            Request request = requestMainServiceRepository.findById(requestId).orElseThrow(() -> new NotFoundException("This request was not found"));
 
             if (requestShort.getStatus().equals(Status.CONFIRMED)) {
                 request.setStatus(Status.CONFIRMED);

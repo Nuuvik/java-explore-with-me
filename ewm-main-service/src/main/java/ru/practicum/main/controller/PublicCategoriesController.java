@@ -26,9 +26,9 @@ public class PublicCategoriesController {
 
     @GetMapping
     public List<CategoriesDto> getListCategories(@RequestParam(defaultValue = "0") @PositiveOrZero int from,
-                                             @RequestParam(defaultValue = "10") @Positive int size) {
+                                                 @RequestParam(defaultValue = "10") @Positive int size) {
         List<Categories> list = service.getListCategories(from, size);
-        return CategoriesMapper.toListCategoriesDto(list);
+        return CategoriesMapper.toCategoriesDto(list);
     }
 
     @GetMapping("/{catId}")

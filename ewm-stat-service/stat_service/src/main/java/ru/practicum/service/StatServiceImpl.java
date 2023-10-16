@@ -34,19 +34,19 @@ public class StatServiceImpl implements StatService {
         if (start.isAfter(end)) {
             throw new TimeException("Дата начала не может быть позже даты конца");
         }
-        if (uris.isEmpty()) { //если список uri пуст
-            if (unique) { //если надо учитывать уникальность
+        if (uris.isEmpty()) {
+            if (unique) {
                 list = serviceRepository.findAllByUriAndIp(start, end);
                 log.info("get unique list without uris");
-            } else { //если не надо учитывать уникальность
+            } else {
                 list = serviceRepository.findAllByTimestampBetween(start, end);
                 log.info("get not unique list without uris");
             }
-        } else { //если список uri не пуст
-            if (unique) { //если надо учитывать уникальность
+        } else {
+            if (unique) {
                 list = serviceRepository.findAllByUriAndIpAndUris(start, end, uris);
                 log.info("get unique list with uris");
-            } else { //если не надо учитывать уникальность
+            } else {
                 list = serviceRepository.findAllByUriAndIpAndUrisNotUnique(start, end, uris);
                 log.info("get not unique list with uris");
             }

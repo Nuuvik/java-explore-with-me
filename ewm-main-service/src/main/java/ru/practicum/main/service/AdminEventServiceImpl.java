@@ -41,21 +41,21 @@ public class AdminEventServiceImpl implements AdminEventService {
     @Transactional
     @Override
     public Event patchAdminEvent(long eventId, AdminEvent eventNew) {
-        Event event = repository.findById(eventId).orElseThrow(() -> new NotFoundException("События " + eventId + " не найденно"));
+        Event event = repository.findById(eventId).orElseThrow(() -> new NotFoundException("Event " + eventId + " not found"));
 
         if (event.getEventDate().isBefore(LocalDateTime.now().plusHours(1))) {
-            throw new BadRequestException("Время изменить данное событие уже упущенно");
+            throw new BadRequestException("The time to change this event has already been missed");
         }
         if (eventNew.getEventDate() != null) {
             if (eventNew.getEventDate().isBefore(LocalDateTime.now().plusHours(1))) {
-                throw new BadRequestException("Поздновато для изменений даты начала события");
+                throw new BadRequestException("Late for event start date changes");
             } else {
                 event.setEventDate(eventNew.getEventDate());
             }
         }
         if (eventNew.getStateAction() != null) {
             if (!event.getState().equals(State.PENDING)) {
-                throw new ConflictException("Нельзя изменять событие не находящееся в статусе ожидания, опубликованное или отмененное");
+                throw new ConflictException("You cannot change an event that is not in the pending status, published or canceled");
             }
 
             if (eventNew.getStateAction().equals(AdminUpdateEventStatus.PUBLISH_EVENT)) {
@@ -90,7 +90,7 @@ public class AdminEventServiceImpl implements AdminEventService {
         }
         if (eventNew.getCategory() != null) {
             event.setCategory(categoriesMainServiceRepository.findById(eventNew.getCategory())
-                    .orElseThrow(() -> new NotFoundException("Категория не найдена")));
+                    .orElseThrow(() -> new NotFoundException("Category not found")));
         }
 
         Map<Long, Long> confirmedRequest = statService.toConfirmedRequest(List.of(event));

@@ -64,10 +64,10 @@ public class PublicEventServiceImpl implements PublicEventService {
 
     @Override
     public Event getPublicEvent(long id, HttpServletRequest request) {
-        Event event = repository.findById(id).orElseThrow(() -> new NotFoundException("Событие с id " + id + " не найдено"));
+        Event event = repository.findById(id).orElseThrow(() -> new NotFoundException("Event with id -  " + id + " not found"));
 
         if (!event.getState().equals(State.PUBLISHED)) {
-            throw new NotFoundException("Событие с id " + id + " не опубликованно");
+            throw new NotFoundException("Event with id -  " + id + " not published");
         }
 
         Map<Long, Long> view = statService.toView(List.of(event));

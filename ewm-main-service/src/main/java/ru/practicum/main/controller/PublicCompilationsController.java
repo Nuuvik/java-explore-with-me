@@ -36,6 +36,6 @@ public class PublicCompilationsController {
                                                 @RequestParam(defaultValue = "0") @PositiveOrZero int from,
                                                 @RequestParam(defaultValue = "10") @Positive int size) {
         List<Compilations> list = service.getCompilation(pinned, from, size);
-        return CompilationMapper.toListCompilationDtoFromCompilation(list);
+        return CompilationMapper.toCompilationDtoFromCompilation(list);
     }
 }

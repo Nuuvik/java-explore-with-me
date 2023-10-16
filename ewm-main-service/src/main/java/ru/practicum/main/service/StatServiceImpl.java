@@ -74,12 +74,12 @@ public class StatServiceImpl implements StatService {
 
             listStat.forEach(statistic -> mapView.put(
                             Long.parseLong(statistic.getUri().replaceAll("[\\D]+", "")),
-                    statistic.getHits()
+                            statistic.getHits()
                     )
             );
 
         } catch (JsonProcessingException e) {
-            throw new StatException("Произошла ошибка выполнения запроса статистики");
+            throw new StatException("An error occurred in executing the statistics request");
         }
         log.info("get view");
         return mapView; //получил количество просмотров на ивент
@@ -89,10 +89,10 @@ public class StatServiceImpl implements StatService {
     @Override
     public void addHits(HttpServletRequest request) {
         statClient.postStatEvent(StatDto.builder()
-                        .ip(request.getRemoteAddr())
-                        .timestamp(LocalDateTime.now())
-                        .uri(request.getRequestURI())
-                        .app(app)
+                .ip(request.getRemoteAddr())
+                .timestamp(LocalDateTime.now())
+                .uri(request.getRequestURI())
+                .app(app)
                 .build());
         log.info("add hits");
     }

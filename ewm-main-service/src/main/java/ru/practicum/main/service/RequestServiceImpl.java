@@ -35,21 +35,21 @@ public class RequestServiceImpl implements RequestService {
     @Override
     public Request createRequest(long userId, long eventId) {
 
-        User user = userMainServiceRepository.findById(userId).orElseThrow(() -> new NotFoundException("Вы не зарегестрированный пользователь"));
+        User user = userMainServiceRepository.findById(userId).orElseThrow(() -> new NotFoundException("You are unregistered user"));
 
-        Event event = eventMainServiceRepository.findById(eventId).orElseThrow(() -> new NotFoundException("Данного ивента " + eventId + " не существует"));
+        Event event = eventMainServiceRepository.findById(eventId).orElseThrow(() -> new NotFoundException("Event " + eventId + " not found"));
 
         if (event.getInitiator().getId().equals(userId)) {
-            throw new ConflictException("Инициатор события не может отправлять заявку на его же событие");
+            throw new ConflictException("The initiator of the event cannot send a request for his own event");
         }
 
         if (!event.getState().equals(State.PUBLISHED)) {
-            throw new ConflictException("Данное событие " + eventId + " еще не опубликованно");
+            throw new ConflictException("Event " + eventId + " not published");
         }
 
         boolean answer = repository.existsByRequesterIdAndEventId(userId, eventId);
         if (answer) {
-            throw new ConflictException("Вы уже отправляли заявку на участие на данный ивент");
+            throw new ConflictException("You have already submitted an application for participation in this event");
         }
         Status status;
         if (event.getRequestModeration().equals(Boolean.FALSE) || event.getParticipantLimit().equals(0)) {
@@ -61,7 +61,7 @@ public class RequestServiceImpl implements RequestService {
         List<ConfirmedRequestShort> requestShortList = repository.countByEventId(List.of(eventId));
 
         if (requestShortList.size() >= event.getParticipantLimit() && event.getParticipantLimit() != 0) {
-            throw new ConflictException("Свободных мест для участия в ивенте " + eventId + " больще нет");
+            throw new ConflictException("Free places to participate in the event " + eventId + " not anymore");
         }
 
         Request request = Request.builder()
@@ -88,12 +88,12 @@ public class RequestServiceImpl implements RequestService {
 
         boolean answer = userMainServiceRepository.existsById(userId);
         if (!answer) {
-            throw new ConflictException("Пользователя с id " + userId + " не существует");
+            throw new ConflictException("User with id -  " + userId + " nor found");
         }
-        Request request = repository.findById(requestId).orElseThrow(() -> new NotFoundException("Данного запроса не существует"));
+        Request request = repository.findById(requestId).orElseThrow(() -> new NotFoundException("This request does not exist"));
 
         request.setStatus(Status.CANCELED);
-        log.info("cansel request");
+        log.info("cancel request");
         return request;
     }
 

@@ -31,7 +31,7 @@ public class AdminCategoriesServiceImpl implements AdminCategoriesService {
     @Transactional
     public void deleteCategories(long catId) {
         if (eventMainServiceRepository.existsByCategoryId(catId)) {
-            throw new ConflictException("Нельзя удалить категорию с ивентами");
+            throw new ConflictException("You can't delete a category with events");
         }
 
         boolean answer = repository.existsById(catId);
@@ -39,21 +39,17 @@ public class AdminCategoriesServiceImpl implements AdminCategoriesService {
             log.info("delete categories");
             repository.deleteById(catId);
         } else {
-            throw new NotFoundException("Нет данной категории");
+            throw new NotFoundException("There is no given category");
         }
     }
 
     @Transactional
     @Override
     public Categories patchCategories(long catId, Categories categoriesDto) {
-        Categories categories = repository.findById(catId).orElseThrow(() -> new NotFoundException("Данной категории нет"));
+        Categories categories = repository.findById(catId).orElseThrow(() -> new NotFoundException("There is no given category"));
 
         categories.setName(categoriesDto.getName());
         log.info("patch categories");
         return categories;
     }
-
-
-
-
 }
