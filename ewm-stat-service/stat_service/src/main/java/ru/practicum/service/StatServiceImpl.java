@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.dao.StatServiceRepository;
+import ru.practicum.exception.TimeException;
 import ru.practicum.model.Stat;
 import ru.practicum.model.StatUniqueOrNot;
 
@@ -15,7 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Slf4j
-public class StatServiceImpl  implements StatService {
+public class StatServiceImpl implements StatService {
 
     private final StatServiceRepository serviceRepository;
 
@@ -29,7 +30,10 @@ public class StatServiceImpl  implements StatService {
 
     @Override
     public List<StatUniqueOrNot> getStat(LocalDateTime start, LocalDateTime end, List<String> uris, boolean unique) {
-            List<StatUniqueOrNot> list;
+        List<StatUniqueOrNot> list;
+        if (start.isAfter(end)) {
+            throw new TimeException("Дата начала не может быть позже даты конца");
+        }
         if (uris.isEmpty()) {
             if (unique) {
                 list = serviceRepository.findAllByUriAndIp(start, end);

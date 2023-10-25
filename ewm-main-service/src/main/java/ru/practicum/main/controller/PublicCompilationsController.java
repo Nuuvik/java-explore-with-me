@@ -1,0 +1,41 @@
+package ru.practicum.main.controller;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import ru.practicum.main.dto.CompilationsDto;
+import ru.practicum.main.mapper.CompilationMapper;
+import ru.practicum.main.model.CompilationShort;
+import ru.practicum.main.model.Compilations;
+import ru.practicum.main.service.PublicCompilationService;
+
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
+import java.util.List;
+
+@RestController
+@Validated
+@RequestMapping("/compilations")
+@RequiredArgsConstructor
+public class PublicCompilationsController {
+
+    private final PublicCompilationService service;
+
+    @GetMapping("/{compId}")
+    public CompilationsDto getCompilationById(@PathVariable long compId) {
+        CompilationShort compilationShort = service.getCompilationById(compId);
+        return CompilationMapper.toCompilationsDto(compilationShort);
+    }
+
+    @GetMapping
+    public List<CompilationsDto> getCompilation(@RequestParam(required = false) Boolean pinned,
+                                                @RequestParam(defaultValue = "0") @PositiveOrZero int from,
+                                                @RequestParam(defaultValue = "10") @Positive int size) {
+        List<Compilations> list = service.getCompilation(pinned, from, size);
+        return CompilationMapper.toCompilationDtoFromCompilation(list);
+    }
+}
