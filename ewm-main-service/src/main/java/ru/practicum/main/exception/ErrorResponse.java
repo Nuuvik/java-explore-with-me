@@ -1,10 +1,8 @@
 package ru.practicum.main.exception;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
-@AllArgsConstructor
 public class ErrorResponse {
 
     private String status;
@@ -13,4 +11,10 @@ public class ErrorResponse {
     private String timestamp;
 
 
+    public ErrorResponse(String status, String reason, String message, String timestamp) {
+        this.status = status;
+        this.reason = reason;
+        this.message = message;
+        this.timestamp = timestamp;
+    }
 }

@@ -9,6 +9,7 @@ import ru.practicum.main.dto.UpdateEventDto;
 import ru.practicum.main.model.AdminEvent;
 import ru.practicum.main.model.Categories;
 import ru.practicum.main.model.Event;
+import ru.practicum.main.model.EventCommentDto;
 import ru.practicum.main.model.EventShort;
 import ru.practicum.main.model.UpdateEvent;
 
@@ -104,7 +105,7 @@ public class EventMapper {
         return event;
     }
 
-    public EventShort toEventShort(Event event, Long view, Long confirmedRequests) {
+    public EventShort toEventShort(Event event, Long view, Long confirmedRequests, Long commentCount) {
         return EventShort.builder()
                 .id(event.getId())
                 .eventDate(event.getEventDate())
@@ -115,6 +116,7 @@ public class EventMapper {
                 .initiator(event.getInitiator())
                 .paid(event.getPaid())
                 .title(event.getTitle())
+                .commentCount(commentCount)
                 .build();
     }
 
@@ -129,6 +131,7 @@ public class EventMapper {
                 .confirmedRequests(eventShort.getConfirmedRequests())
                 .id(eventShort.getId())
                 .paid(eventShort.getPaid())
+                .commentCount(eventShort.getCommentCount())
                 .build();
     }
 
@@ -152,5 +155,12 @@ public class EventMapper {
 
     public static List<EventShort> toListEventShort(List<Event> list) {
         return list.stream().map(EventMapper::toEventShort).collect(Collectors.toList());
+    }
+
+    public EventCommentDto toEventComment(Event event) {
+        return EventCommentDto.builder()
+                .id(event.getId())
+                .title(event.getTitle())
+                .build();
     }
 }

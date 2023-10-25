@@ -48,7 +48,7 @@ public class UserController {
     @GetMapping
     public List<AdminUserDto> getUsers(@RequestParam(defaultValue = "") List<Long> ids,
                                        @RequestParam(defaultValue = "0") @PositiveOrZero int from,
-                                        @RequestParam(defaultValue = "10") @Positive int size) {
+                                       @RequestParam(defaultValue = "10") @Positive int size) {
         List<AdminUserDto> list = UserMapper.toListAdminUserDto(userService.getUsers(ids, from, size));
         return list;
     }
