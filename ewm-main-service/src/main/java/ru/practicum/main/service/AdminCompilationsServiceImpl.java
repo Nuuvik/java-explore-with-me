@@ -30,6 +30,8 @@ public class AdminCompilationsServiceImpl implements AdminCompilationsService {
 
     private final EventMainServiceRepository eventMainServiceRepository;
 
+    private final PrivateCommentService privateCommentService;
+
     private final StatService statService;
 
     @Override
@@ -49,11 +51,12 @@ public class AdminCompilationsServiceImpl implements AdminCompilationsService {
         Compilations compilations = repository.save(CompilationMapper.toCompilation(newCompilation, events));
 
         Map<Long, Long> view = statService.toView(events);
-
         Map<Long, Long> confirmedRequest = statService.toConfirmedRequest(events);
+        Map<Long, Long> commentCount = privateCommentService.getCommentCount(events);
 
         List<EventShort> listEventShort = compilations.getEvents().stream().map(event ->
-                        EventMapper.toEventShort(event, view.getOrDefault(event.getId(), 0L), confirmedRequest.getOrDefault(event.getId(), 0L)))
+                        EventMapper.toEventShort(event, view.getOrDefault(event.getId(), 0L), confirmedRequest.getOrDefault(event.getId(), 0L),
+                                commentCount.getOrDefault(event.getId(), 0L)))
                 .collect(Collectors.toList());
 
         log.info("create new compilation");
@@ -87,11 +90,12 @@ public class AdminCompilationsServiceImpl implements AdminCompilationsService {
         }
 
         Map<Long, Long> view = statService.toView(compilations.getEvents());
-
         Map<Long, Long> confirmedRequest = statService.toConfirmedRequest(compilations.getEvents());
+        Map<Long, Long> commentCount = privateCommentService.getCommentCount(compilations.getEvents());
 
         List<EventShort> listEventShort = compilations.getEvents().stream().map(event ->
-                        EventMapper.toEventShort(event, view.getOrDefault(event.getId(), 0L), confirmedRequest.getOrDefault(event.getId(), 0L)))
+                        EventMapper.toEventShort(event, view.getOrDefault(event.getId(), 0L), confirmedRequest.getOrDefault(event.getId(), 0L),
+                                commentCount.getOrDefault(event.getId(), 0L)))
                 .collect(Collectors.toList());
 
         log.info("patch compilation");
