@@ -38,8 +38,7 @@ public class AdminCommentServiceImpl implements AdminCommentService {
 
     @Override
     public List<Comment> adminUserComment(long userId) {
-        boolean answer = userMainServiceRepository.existsById(userId);
-        if (!answer) {
+        if (!userMainServiceRepository.existsById(userId)) {
             throw new NotFoundException("User with id=" + userId + " not found");
         }
         List<Comment> list = repository.findAllByAuthorId(userId);
